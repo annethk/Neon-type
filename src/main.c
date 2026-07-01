@@ -50,6 +50,13 @@ void adicionar_bonus_visual(const char* texto, Color cor, int tamanho) {
     }
 }
 
+// função de limpar input, correção de erro do "Input Fantasma" 
+void LimparInput(char *buffer, int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        buffer[i] = '\0'; // Preenche o buffer com caracteres nulos
+    }
+}
+
 //Telas 
 typedef enum { MENU, LOGIN, INTRO_FASE, GAMEPLAY, LOJA, PAUSA, RANKING, GAMEOVER, VICTORY } TelasJogo;
 
@@ -344,6 +351,14 @@ int main(void) {
                 break;
             
             case LOGIN: {
+                // SE ESTIVERMOS COMEÇANDO AGORA, LIMPA O BUFFER 
+                static bool precisaLimpar = true; 
+                if (precisaLimpar) {
+                    tamanhoInputLogin = 0;
+                    inputLogin[0] = '\0';
+                    precisaLimpar = false; 
+                }
+                
                 contadorframeLogin++;
                 if (contadorframeLogin >= 20) { // troca a cada 15 frames 
                     frameLogin++;
@@ -373,6 +388,10 @@ int main(void) {
                     } else {
                         TextCopy(jogador.nome, inputLogin);
                     }
+
+                    // --- RESETAR O INTERRUPTOR ---
+                    precisaLimpar = true;
+
                     // Animação para a prox tela (gameplay)
                     yTexto = -20; 
                     letrasVisiveis = 0; 
@@ -697,7 +716,7 @@ int main(void) {
                                 telaAtual = RANKING;
                             } else {
 
-                               // --- AQUI GARANTE O INPUT LIMPO ---
+                               // --- AQUI GARANTE O  LIMPO ---
                                 tamanhoinput = 0;
                                 input[0] = '\0';
 
