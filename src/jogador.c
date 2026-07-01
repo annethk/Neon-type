@@ -13,6 +13,7 @@ Jogador jogador_criar(const char *nome) {
     j.moedas = 0;
     j.palavras_fase = 0;
     j.backup_usado = 0;
+    j.tempo_extra_acumulado = 0;
     return j;
 }
 

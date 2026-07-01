@@ -369,6 +369,13 @@ int main(void) {
                     timerTexto = 0.0f;
                     estadoIntro = 0; 
                     jogador_resetar_fase(&jogador);
+
+                    // Limpa os bônus visuais para não transbordar entre fases
+                    for (int i = 0; i < MAX_BONUS; i++) {
+                        listaBonus[i].ativo = 0;
+                        listaBonus[i].alpha = 0.0f; // Garante que fique invisível
+                    }
+
                     telaAtual = INTRO_FASE;
                 }
                 break;
@@ -680,11 +687,7 @@ int main(void) {
                                 telaAtual = RANKING;
                             } else {
 
-                                // --- AQUI APLICA O TEMPO EXTRA ---
-                                timerFase.tempo_restante += jogador.tempo_extra_acumulado;
-                                jogador.tempo_extra_acumulado = 0; // Reseta para não acumular para sempre
-
-                                // --- AQUI GARANTE O INPUT LIMPO ---
+                               // --- AQUI GARANTE O INPUT LIMPO ---
                                 tamanhoinput = 0;
                                 input[0] = '\0';
 
@@ -698,8 +701,20 @@ int main(void) {
                                 // onde estavam).
                                 scoreAtual = jogador.score;
                                 jogador_resetar_fase(&jogador);
+
+                                // Limpa os bônus visuais para não transbordar entre fases
+                                for (int i = 0; i < MAX_BONUS; i++) {
+                                    listaBonus[i].ativo = 0;
+                                    listaBonus[i].alpha = 0.0f; // Garante que fique invisível
+                                }
+
                                 faseConfig = fase_obter_config(faseAtual + 1);
                                 timerFase = fase_timer_iniciar(faseConfig);
+                                 
+                                // --- AQUI APLICA O TEMPO EXTRA ---
+                                timerFase.tempo_restante += jogador.tempo_extra_acumulado;
+                                jogador.tempo_extra_acumulado = 0; // Reseta para não acumular para sempre
+                                
                                 palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
                                 const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
                                 if (prox != NULL) TextCopy(palavraAtual, prox->texto);

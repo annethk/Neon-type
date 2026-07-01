@@ -5,7 +5,6 @@
 #define VIDAS_MAX 5
 #define COMBO_FRENESI 20
 
-
 typedef struct {
     char nome[MAX_NOME];
     int score;
@@ -15,6 +14,7 @@ typedef struct {
     int moedas;
     int palavras_fase;  // quantas palavras corretas na fase atual
     int backup_usado;   // 0 = backup de vida disponivel na fase, 1 = ja usado
+    int tempo_extra_acumulado; // tempo extra acumulado para usar na fase seguinte
 } Jogador;
 
 Jogador jogador_criar(const char *nome);
