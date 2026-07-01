@@ -18,7 +18,7 @@ ResultadoCompra economia_comprar_item(Jogador *jogador, TimerFase *timer, ItemLo
                 return COMPRA_FALHA_SEM_MOEDAS;
             }
             jogador->moedas -= PRECOS_LOJA[ITEM_REFRIGERACAO];
-            fase_timer_adicionar_tempo(timer, 5);
+            jogador->tempo_extra_acumulado += 5; // Salva para usar depois
             return COMPRA_SUCESSO;
 
         case ITEM_OVERCLOCK:
@@ -26,7 +26,7 @@ ResultadoCompra economia_comprar_item(Jogador *jogador, TimerFase *timer, ItemLo
                 return COMPRA_FALHA_SEM_MOEDAS;
             }
             jogador->moedas -= PRECOS_LOJA[ITEM_OVERCLOCK];
-            fase_timer_adicionar_tempo(timer, 10);
+            jogador->tempo_extra_acumulado += 10; // Salva para usar depois
             return COMPRA_SUCESSO;
 
         case ITEM_BACKUP_DADOS:

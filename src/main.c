@@ -679,6 +679,15 @@ int main(void) {
                                 faseAtual = 0;
                                 telaAtual = RANKING;
                             } else {
+
+                                // --- AQUI APLICA O TEMPO EXTRA ---
+                                timerFase.tempo_restante += jogador.tempo_extra_acumulado;
+                                jogador.tempo_extra_acumulado = 0; // Reseta para não acumular para sempre
+
+                                // --- AQUI GARANTE O INPUT LIMPO ---
+                                tamanhoinput = 0;
+                                input[0] = '\0';
+
                                 // Reconfigura fase/timer/banco de palavras
                                 // para a próxima fase (faseAtual já foi
                                 // incrementado acima). jogador_resetar_fase
