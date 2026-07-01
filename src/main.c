@@ -50,11 +50,21 @@ void adicionar_bonus_visual(const char* texto, Color cor, int tamanho) {
     }
 }
 
+bool faseIniciando = false;
+
+char inputGameplay[50] = {0}; 
+int tamanhoInputGameplay = 0;
+
 // função de limpar input, correção de erro do "Input Fantasma" 
 void LimparInput(char *buffer, int tamanho) {
     for (int i = 0; i < tamanho; i++) {
         buffer[i] = '\0'; // Preenche o buffer com caracteres nulos
     }
+}
+
+void ResetarInputGameplay() {
+    tamanhoInputGameplay = 0;
+    LimparInput(inputGameplay, 50); // Usa a função acima para limpar o buffer
 }
 
 //Telas 
@@ -298,7 +308,7 @@ int main(void) {
     //Guardar scoreAtual do jogador
     int scoreAtual = 0;
     
-    // Antes do while, ele aponta para uma música que você carregou:
+    // Antes do while, ele aponta para uma música que carregou:
     Music *musicaAtual = &musica;
 
     while (!WindowShouldClose()) {
@@ -443,6 +453,7 @@ int main(void) {
                             letrasVisiveis = 0;
                             timerTexto = 0.0f;
                         } else {
+                            faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         }
                     } else {
@@ -452,6 +463,16 @@ int main(void) {
                 break;
                 
             case GAMEPLAY: 
+            // BLINDAGEM: Limpa o buffer de teclado do SO assim que entra no gameplay
+                while (GetCharPressed() > 0); 
+    
+            // Se for o início de uma nova partida, zera tudo
+                if (faseIniciando) {
+                    tamanhoinput = 0;
+                    input[0] = '\0';
+                    faseIniciando = false; // Agora que limpamos, desativa a flag
+                }
+
                 if (SairPausa) {
                     while (GetCharPressed() != 0);
                     SairPausa = false;
@@ -506,6 +527,7 @@ int main(void) {
                         }
                     }
                     int morreuNestaJogada = 0;
+
                     //sistema de acerto e recompensas
                     if (palavraCorreta) {
                         // jogador_incrementar_combo cuida do bônus de vida
@@ -549,7 +571,7 @@ int main(void) {
                             PlaySound(moeda);
                         }
                     }
-
+                   
                     // fase_avaliar_resultado centraliza a regra do GDD
                     // seção 3: vitória (meta atingida) tem prioridade sobre
                     // derrota, mesmo que vidas/tempo tenham zerado no mesmo
@@ -600,6 +622,7 @@ int main(void) {
                         case 0:           
                             SairPausa = true;
                             PlaySound(selectSom);
+                            faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         break;
                         case 1: PlaySound(selectSom);
@@ -777,17 +800,24 @@ int main(void) {
                 if (IsKeyPressed(KEY_ENTER)) {
                     StopMusicStream(gameover);
                     PlayMusicStream(musica);
-                    jogador = jogador_criar(jogador.nome);
-                    faseAtual = 0;
-                    faseConfig = fase_obter_config(faseAtual + 1);
-                    timerFase = fase_timer_iniciar(faseConfig);
-                    palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
-                    const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
-                    if (prox != NULL) TextCopy(palavraAtual, prox->texto);
-                    telaAtual = MENU;
-                }
-                break;
+                    
+                // --- LIMPEZA TOTAL ---
+                ResetarInputGameplay();
+        
+                // --- RESET DO JOGADOR ---
+                jogador = jogador_criar(jogador.nome);
+                faseAtual = 0;
+                faseConfig = fase_obter_config(faseAtual + 1);
+                timerFase = fase_timer_iniciar(faseConfig);
+                palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
+                const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
                 
+                if (prox != NULL) TextCopy(palavraAtual, prox->texto);
+                telaAtual = MENU;
+                }
+            break; 
+              
+
             case VICTORY:
                 StopMusicStream(musica);
                 UpdateMusicStream(vitoria);
