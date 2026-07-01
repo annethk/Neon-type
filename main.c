@@ -664,6 +664,7 @@ int main(void) {
                 break;
                 
             case GAMEOVER:
+                StopMusicStream(musica);
                 UpdateMusicStream(gameover);
                 // Ranking (GDD seção 10): ao perder, se o score qualifica
                 // para o Top 3, grava o nome digitado no LOGIN + score no
@@ -692,7 +693,7 @@ int main(void) {
                 break;
                 
             case VICTORY:
-              
+                StopMusicStream(musica);
                 UpdateMusicStream(vitoria);
                 if (IsKeyPressed(KEY_ENTER)) {
                     StopMusicStream(vitoria);
