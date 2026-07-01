@@ -65,9 +65,9 @@ int palavras_carregar_arquivo(const char *caminho, BancoPalavras *banco) {
         int *total = &banco->total_carregadas[idx];
 
         if (*total < MAX_PALAVRAS_POR_LINGUAGEM) {
-            strncpy(banco.palavras[idx][*total].texto, linha, MAX_TEXTO_PALAVRA - 1);
-            banco.palavras[idx][*total].texto[MAX_TEXTO_PALAVRA - 1] = '\0';
-            banco.palavras[idx][*total].linguagem_id = linguagem_atual;
+            strncpy(banco->palavras[idx][*total].texto, linha, MAX_TEXTO_PALAVRA - 1);
+            banco->palavras[idx][*total].texto[MAX_TEXTO_PALAVRA - 1] = '\0';
+            banco->palavras[idx][*total].linguagem_id = linguagem_atual;
             (*total)++;
         }
     }
