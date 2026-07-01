@@ -341,6 +341,8 @@ int main(void) {
                     timerTexto = 0.0f;
                     estadoIntro = 0; 
                     jogador_resetar_fase(&jogador);
+                    jogador_resetar_total(&jogador); // Zera score, checkpoint e moedas
+                    jogador_salvar_checkpoint(&jogador); // O checkpoint começa em 0
                     telaAtual = INTRO_FASE;
                 }
                 break;
@@ -529,7 +531,7 @@ int main(void) {
                             jogador.combo = 0;
                             jogador.palavras_fase = 0; 
                             jogador.vidas = 5; 
-                            jogador.score = scoreAtual;
+                            jogador_reiniciar_fase(&jogador);
                             tamanhoinput = 0;
                             input[0] = '\0';
                             timerFase = fase_timer_iniciar(faseConfig);
@@ -619,6 +621,12 @@ int main(void) {
                         case 4: 
                             PlaySound(selectSom);
                             (faseAtual)++;
+
+                            // Salva o score que foi acumulado até o final da fase anterior
+                            // e o gasto na loja, estabelecendo o novo saldo base.
+                            jogador_salvar_checkpoint(&jogador); 
+                            // --------------------------
+
                             tamanhoinput = 0;
                             input[0] = '\0';
 

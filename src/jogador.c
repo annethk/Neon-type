@@ -75,3 +75,22 @@ void jogador_completar_palavra(Jogador *j) {
     j->score  += 10 * mult; // score escalado pelo mesmo multiplicador
     j->palavras_fase++;
 }
+
+// Salva o score atual como o ponto de partida para a fase atual
+void jogador_salvar_checkpoint(Jogador *j) {
+    j->score_checkpoint = j->score;
+}
+
+// Volta o score para o valor que ele tinha no início da fase
+void jogador_reiniciar_fase(Jogador *j) {
+    j->score = j->score_checkpoint;
+}
+
+// Reseta tudo (usado no Novo Jogo)
+void jogador_resetar_total(Jogador *j) {
+    j->score = 0;
+    j->score_checkpoint = 0;
+    j->moedas = 0;
+    j->level = 1;
+    // ... reset de outras variáveis desejar
+}
