@@ -399,6 +399,11 @@ int main(void) {
                         TextCopy(jogador.nome, inputLogin);
                     }
 
+                    faseAtual = 0; // Volta para o Level 1
+                    faseConfig = fase_obter_config(faseAtual + 1); // Carrega config do Level 1
+                    timerFase = fase_timer_iniciar(faseConfig);    // Reinicia o timer do Level 1
+                    jogador = jogador_criar(jogador.nome);         // Recria o jogador do zero (limpa nível, score, tudo)
+
                     // --- RESETAR O INTERRUPTOR ---
                     precisaLimpar = true;
 
@@ -453,6 +458,10 @@ int main(void) {
                             letrasVisiveis = 0;
                             timerTexto = 0.0f;
                         } else {
+
+                            // AQUI: Reseta o estado do jogador para garantir que ele comece do Level 1
+                            jogador_resetar_total(&jogador);
+
                             faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         }
@@ -463,9 +472,6 @@ int main(void) {
                 break;
                 
             case GAMEPLAY: 
-            // BLINDAGEM: Limpa o buffer de teclado do SO assim que entra no gameplay
-                //while (GetCharPressed() > 0); 
-    
             // Se for o início de uma nova partida, zera tudo
                 if (faseIniciando) {
                     tamanhoinput = 0;
@@ -622,6 +628,9 @@ int main(void) {
                         case 0:           
                             SairPausa = true;
                             PlaySound(selectSom);
+
+                            jogador_resetar_total(&jogador);
+
                             faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         break;
