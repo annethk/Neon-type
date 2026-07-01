@@ -450,6 +450,13 @@ int main(void) {
                         // usando o multiplicador de combo (GDD seção 12).
                         jogador_incrementar_combo(&jogador);
                         jogador_completar_palavra(&jogador);
+
+                        // --- NOVA LÓGICA DE TEMPO ---
+                        // Verifica se o combo é par (maior que 0) e adiciona 1 segundo
+                        if (jogador.combo > 0 && jogador.combo % 2 == 0) {
+                            fase_timer_adicionar_tempo(&timerFase, 1); // <--- AQUI!
+                        }
+
                         if (jogador.combo >= 20) {
                             if (jogador.vidas < 5) {
                                 jogador.vidas++;
