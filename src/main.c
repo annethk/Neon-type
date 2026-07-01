@@ -464,7 +464,7 @@ int main(void) {
                 
             case GAMEPLAY: 
             // BLINDAGEM: Limpa o buffer de teclado do SO assim que entra no gameplay
-                while (GetCharPressed() > 0); 
+                //while (GetCharPressed() > 0); 
     
             // Se for o início de uma nova partida, zera tudo
                 if (faseIniciando) {
