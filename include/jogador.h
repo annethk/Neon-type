@@ -8,6 +8,7 @@
 typedef struct {
     char nome[MAX_NOME];
     int score;
+    int score_checkpoint;
     int combo;
     int level;
     int vidas;          // 0..VIDAS_MAX

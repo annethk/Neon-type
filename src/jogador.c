@@ -7,6 +7,7 @@ Jogador jogador_criar(const char *nome) {
     j.nome[MAX_NOME - 1] = '\0';
 
     j.score = 0;
+    j.score_checkpoint = 0;
     j.combo = 0;
     j.level = 1;
     j.vidas = VIDAS_MAX;

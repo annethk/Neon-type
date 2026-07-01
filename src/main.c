@@ -2,7 +2,6 @@
 #include <stdlib.h> // Necessário para a função exit(0)
 #include <stdio.h>
 #include <time.h>   // srand(time(NULL)) para sorteio de palavras
-#include <string.h>
 
 // ===== Módulo de lógica/dados do Programador A =====
 // Substitui as struc#include "raylib.h"
@@ -22,50 +21,6 @@
 #include "ranking.h"
 
 //Structs principais 
-typedef struct {
-    char texto[10];
-    float x, y;
-    float alpha;
-    Color cor;
-    int tamanho;
-    int ativo;
-} BonusVisual;
-
-#define MAX_BONUS 10
-BonusVisual listaBonus[MAX_BONUS] = {0};
-
-// Função para disparar o efeito
-void adicionar_bonus_visual(const char* texto, Color cor, int tamanho) {
-    for (int i = 0; i < MAX_BONUS; i++) {
-        if (!listaBonus[i].ativo) {
-            listaBonus[i].ativo = 1;
-            listaBonus[i].alpha = 1.0f;
-            listaBonus[i].x = 230; 
-            listaBonus[i].y = 40;  // Começa mais abaixo do cabeçalho
-            listaBonus[i].cor = cor;
-            listaBonus[i].tamanho = tamanho;
-            strcpy(listaBonus[i].texto, texto);
-            break;
-        }
-    }
-}
-
-bool faseIniciando = false;
-
-char inputGameplay[50] = {0}; 
-int tamanhoInputGameplay = 0;
-
-// função de limpar input, correção de erro do "Input Fantasma" 
-void LimparInput(char *buffer, int tamanho) {
-    for (int i = 0; i < tamanho; i++) {
-        buffer[i] = '\0'; // Preenche o buffer com caracteres nulos
-    }
-}
-
-void ResetarInputGameplay() {
-    tamanhoInputGameplay = 0;
-    LimparInput(inputGameplay, 50); // Usa a função acima para limpar o buffer
-}
 
 //Telas 
 typedef enum { MENU, LOGIN, INTRO_FASE, GAMEPLAY, LOJA, PAUSA, RANKING, GAMEOVER, VICTORY } TelasJogo;
@@ -125,11 +80,10 @@ int main(void) {
     InitAudioDevice();
     Music musica = LoadMusicStream("music_level_low.mp3");
     PlayMusicStream(musica);
-    Music musica_level_high = LoadMusicStream("music_level_high.mp3"); // <---
     Sound selectSom = LoadSound("select.button.wav");
     Music vitoria = LoadMusicStream("victory.wav");
     Music gameover = LoadMusicStream("lose.wav");
-    Music combo10 = LoadMusicStream("music_level_high.mp3");
+    Music combo10 = LoadMusicStream("music_level_low.mp3");
     Sound letraErrada = LoadSound("wrong.letter.wav");
     Sound letraCorreta = LoadSound("correct.letter.wav");
     Sound moeda = LoadSound("moeda.wav");
@@ -308,29 +262,20 @@ int main(void) {
     //Guardar scoreAtual do jogador
     int scoreAtual = 0;
     
-    // Antes do while, ele aponta para uma música que carregou:
-    Music *musicaAtual = &musica;
-
     while (!WindowShouldClose()) {
-       Music *musicaDesejada = &musica; // Começa na trilha 1-4
-
-        if (faseAtual >= 4) { // Nível 5 (index 4) em diante
-            musicaDesejada = &musica_level_high;
+        Music musicaDesejada;
+        if (jogador.combo >= 20 || (faseAtual >= 4 && faseAtual <= 7)) {
+            musicaDesejada = combo10;
+        } else {
+            musicaDesejada = musica;
         }
 
-        if (jogador.combo >= 10) {
-            musicaDesejada = &combo10; // Frenesi ativado
+        if (!IsMusicStreamPlaying(musicaDesejada)) {
+            StopMusicStream(musica);
+            StopMusicStream(combo10);
+            PlayMusicStream(musicaDesejada);
         }
-
-    // Troca apenas se mudou
-        if (musicaAtual != musicaDesejada) {
-            StopMusicStream(*musicaAtual);
-            PlayMusicStream(*musicaDesejada);
-            musicaAtual = musicaDesejada;
-        }
-
-        UpdateMusicStream(*musicaAtual); 
-
+        UpdateMusicStream(musicaDesejada);
         // ETAPA 1: LÓGICA
         switch (telaAtual) {
             case MENU:
@@ -361,14 +306,6 @@ int main(void) {
                 break;
             
             case LOGIN: {
-                // SE ESTIVERMOS COMEÇANDO AGORA, LIMPA O BUFFER 
-                static bool precisaLimpar = true; 
-                if (precisaLimpar) {
-                    tamanhoInputLogin = 0;
-                    inputLogin[0] = '\0';
-                    precisaLimpar = false; 
-                }
-                
                 contadorframeLogin++;
                 if (contadorframeLogin >= 20) { // troca a cada 15 frames 
                     frameLogin++;
@@ -398,28 +335,12 @@ int main(void) {
                     } else {
                         TextCopy(jogador.nome, inputLogin);
                     }
-
-                    faseAtual = 0; // Volta para o Level 1
-                    faseConfig = fase_obter_config(faseAtual + 1); // Carrega config do Level 1
-                    timerFase = fase_timer_iniciar(faseConfig);    // Reinicia o timer do Level 1
-                    jogador = jogador_criar(jogador.nome);         // Recria o jogador do zero (limpa nível, score, tudo)
-
-                    // --- RESETAR O INTERRUPTOR ---
-                    precisaLimpar = true;
-
                     // Animação para a prox tela (gameplay)
                     yTexto = -20; 
                     letrasVisiveis = 0; 
                     timerTexto = 0.0f;
                     estadoIntro = 0; 
                     jogador_resetar_fase(&jogador);
-
-                    // Limpa os bônus visuais para não transbordar entre fases
-                    for (int i = 0; i < MAX_BONUS; i++) {
-                        listaBonus[i].ativo = 0;
-                        listaBonus[i].alpha = 0.0f; // Garante que fique invisível
-                    }
-
                     telaAtual = INTRO_FASE;
                 }
                 break;
@@ -458,11 +379,6 @@ int main(void) {
                             letrasVisiveis = 0;
                             timerTexto = 0.0f;
                         } else {
-
-                            // AQUI: Reseta o estado do jogador para garantir que ele comece do Level 1
-                            jogador_resetar_total(&jogador);
-
-                            faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         }
                     } else {
@@ -472,13 +388,6 @@ int main(void) {
                 break;
                 
             case GAMEPLAY: 
-            // Se for o início de uma nova partida, zera tudo
-                if (faseIniciando) {
-                    tamanhoinput = 0;
-                    input[0] = '\0';
-                    faseIniciando = false; // Agora que limpamos, desativa a flag
-                }
-
                 if (SairPausa) {
                     while (GetCharPressed() != 0);
                     SairPausa = false;
@@ -533,7 +442,6 @@ int main(void) {
                         }
                     }
                     int morreuNestaJogada = 0;
-
                     //sistema de acerto e recompensas
                     if (palavraCorreta) {
                         // jogador_incrementar_combo cuida do bônus de vida
@@ -542,21 +450,6 @@ int main(void) {
                         // usando o multiplicador de combo (GDD seção 12).
                         jogador_incrementar_combo(&jogador);
                         jogador_completar_palavra(&jogador);
-
-                        // --- NOVA LÓGICA DE TEMPO ---
-                        // Verifica se o combo é par (maior que 0) e adiciona 1 segundo
-                        // No combo par: +1s (Amarelo, tamanho padrão do timer)
-                        if (jogador.combo > 0 && jogador.combo % 2 == 0) {
-                            fase_timer_adicionar_tempo(&timerFase, 1);
-                            adicionar_bonus_visual("+1s", (Color){ 255, 255, 0, 255 }, 20);
-                            }
-
-                        // No combo múltiplo de 5: +2s (Magenta, maior)
-                        if (jogador.combo > 0 && jogador.combo % 5 == 0) {
-                            fase_timer_adicionar_tempo(&timerFase, 1); 
-                            adicionar_bonus_visual("+2s", (Color){ 255, 0, 255, 255 }, 25);
-                        }
-
                         if (jogador.combo >= 20) {
                             if (jogador.vidas < 5) {
                                 jogador.vidas++;
@@ -577,7 +470,7 @@ int main(void) {
                             PlaySound(moeda);
                         }
                     }
-                   
+
                     // fase_avaliar_resultado centraliza a regra do GDD
                     // seção 3: vitória (meta atingida) tem prioridade sobre
                     // derrota, mesmo que vidas/tempo tenham zerado no mesmo
@@ -628,10 +521,6 @@ int main(void) {
                         case 0:           
                             SairPausa = true;
                             PlaySound(selectSom);
-
-                            jogador_resetar_total(&jogador);
-
-                            faseIniciando = true;
                             telaAtual = GAMEPLAY; 
                         break;
                         case 1: PlaySound(selectSom);
@@ -747,11 +636,6 @@ int main(void) {
                                 faseAtual = 0;
                                 telaAtual = RANKING;
                             } else {
-
-                               // --- AQUI GARANTE O  LIMPO ---
-                                tamanhoinput = 0;
-                                input[0] = '\0';
-
                                 // Reconfigura fase/timer/banco de palavras
                                 // para a próxima fase (faseAtual já foi
                                 // incrementado acima). jogador_resetar_fase
@@ -762,20 +646,8 @@ int main(void) {
                                 // onde estavam).
                                 scoreAtual = jogador.score;
                                 jogador_resetar_fase(&jogador);
-
-                                // Limpa os bônus visuais para não transbordar entre fases
-                                for (int i = 0; i < MAX_BONUS; i++) {
-                                    listaBonus[i].ativo = 0;
-                                    listaBonus[i].alpha = 0.0f; // Garante que fique invisível
-                                }
-
                                 faseConfig = fase_obter_config(faseAtual + 1);
                                 timerFase = fase_timer_iniciar(faseConfig);
-                                 
-                                // --- AQUI APLICA O TEMPO EXTRA ---
-                                timerFase.tempo_restante += jogador.tempo_extra_acumulado;
-                                jogador.tempo_extra_acumulado = 0; // Reseta para não acumular para sempre
-                                
                                 palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
                                 const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
                                 if (prox != NULL) TextCopy(palavraAtual, prox->texto);
@@ -809,24 +681,17 @@ int main(void) {
                 if (IsKeyPressed(KEY_ENTER)) {
                     StopMusicStream(gameover);
                     PlayMusicStream(musica);
-                    
-                // --- LIMPEZA TOTAL ---
-                ResetarInputGameplay();
-        
-                // --- RESET DO JOGADOR ---
-                jogador = jogador_criar(jogador.nome);
-                faseAtual = 0;
-                faseConfig = fase_obter_config(faseAtual + 1);
-                timerFase = fase_timer_iniciar(faseConfig);
-                palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
-                const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
-                
-                if (prox != NULL) TextCopy(palavraAtual, prox->texto);
-                telaAtual = MENU;
+                    jogador = jogador_criar(jogador.nome);
+                    faseAtual = 0;
+                    faseConfig = fase_obter_config(faseAtual + 1);
+                    timerFase = fase_timer_iniciar(faseConfig);
+                    palavras_embaralhar_linguagem(&banco, faseConfig->linguagem_id);
+                    const Palavra *prox = palavras_sortear(&banco, faseConfig->linguagem_id);
+                    if (prox != NULL) TextCopy(palavraAtual, prox->texto);
+                    telaAtual = MENU;
                 }
-            break; 
-              
-
+                break;
+                
             case VICTORY:
                 StopMusicStream(musica);
                 UpdateMusicStream(vitoria);
@@ -1037,22 +902,6 @@ int main(void) {
                     // nos últimos 5s como aviso visual de urgência.
                     Color corTempo = (timerFase.tempo_restante <= 5.0f) ? RED : GREEN;
                     DrawText(TextFormat("%02d", (int)timerFase.tempo_restante), 270, 8, 10, corTempo);
-
-                    // --- CÓDIGO DO BÔNUS AQUI ---
-                    for (int i = 0; i < MAX_BONUS; i++) {
-                        if (listaBonus[i].ativo) {
-                            listaBonus[i].alpha -= 0.015f; // Fade um pouco mais rápido para parecer "brilho"
-                            listaBonus[i].y += 0.8f;       // Desce mais rápido para ganhar dinamismo
-        
-                        DrawText(listaBonus[i].texto, (int)listaBonus[i].x, (int)listaBonus[i].y, 
-                        listaBonus[i].tamanho, Fade(listaBonus[i].cor, listaBonus[i].alpha));
-        
-                        if (listaBonus[i].alpha <= 0) listaBonus[i].ativo = 0;
-                        }
-                    }
-
-                    // -------CÓDIGO DOS CORAÇÕES CONTINUAM AQUI---------
-
                         for (int i = 0; i < 5; i++){
                              if (i < jogador.vidas){ 
                             DrawTexturePro(
@@ -1065,8 +914,9 @@ int main(void) {
                                 );
                              }
                         }
-
-                    //variaveis para descobrir o tamanho da palavra e quantas letras o jogador digitou
+                     
+                    
+                    //variaveis para ddescobrir o tamanho da palavra e quantas letras o jogador digitou
                     int tamP = TextLength(palavraAtual);
                     int tamI = TextLength(input);
                     
@@ -1182,11 +1032,11 @@ int main(void) {
                     (Rectangle){0, 0, 320, 240},
                     (Vector2){0, 0}, 0.0f, WHITE);
                     Color corGameOver = RED;
-                    DrawText("GAMEOVER", 76, 36, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 78, 38, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 76,36, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 78,38, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 76, 36, 40, corGameOver);
+                    DrawText("GAMEOVER", 46, 36, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 48, 38, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 46,36, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 48,38, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 46, 36, 40, corGameOver);
                     DrawTexturePro(notebookNormal, (Rectangle){0, 0, (float)notebookNormal.width, (float)notebookNormal.height},
                     (Rectangle){80, 40, 190, 190},
                     (Vector2){0, 0}, 0.0f, WHITE);
