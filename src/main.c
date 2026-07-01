@@ -108,10 +108,11 @@ int main(void) {
     InitAudioDevice();
     Music musica = LoadMusicStream("music_level_low.mp3");
     PlayMusicStream(musica);
+    Music musica_level_high = LoadMusicStream("music_level_high.mp3"); // <---
     Sound selectSom = LoadSound("select.button.wav");
     Music vitoria = LoadMusicStream("victory.wav");
     Music gameover = LoadMusicStream("lose.wav");
-    Music combo10 = LoadMusicStream("music_level_low.mp3");
+    Music combo10 = LoadMusicStream("music_level_high.mp3");
     Sound letraErrada = LoadSound("wrong.letter.wav");
     Sound letraCorreta = LoadSound("correct.letter.wav");
     Sound moeda = LoadSound("moeda.wav");
@@ -290,20 +291,31 @@ int main(void) {
     //Guardar scoreAtual do jogador
     int scoreAtual = 0;
     
+    // Antes do while, ele aponta para uma música que você carregou:
+    Music *musicaAtual = &musica;
+
     while (!WindowShouldClose()) {
-        Music musicaDesejada;
-        if (jogador.combo >= 20 || (faseAtual >= 4 && faseAtual <= 7)) {
-            musicaDesejada = combo10;
-        } else {
-            musicaDesejada = musica;
+       Music *musicaDesejada = &musica; // Começa na trilha 1-4
+
+        if (faseAtual >= 4) { // Nível 5 (index 4) em diante
+            musicaDesejada = &musica_level_high;
         }
 
-        if (!IsMusicStreamPlaying(musicaDesejada)) {
-            StopMusicStream(musica);
-            StopMusicStream(combo10);
-            PlayMusicStream(musicaDesejada);
+        if (jogador.combo >= 10) {
+            musicaDesejada = &combo10; // Frenesi ativado
         }
-        UpdateMusicStream(musicaDesejada);
+
+    // Troca apenas se mudou
+        if (musicaAtual != musicaDesejada) {
+            StopMusicStream(*musicaAtual);
+            PlayMusicStream(*musicaDesejada);
+            musicaAtual = musicaDesejada;
+        }
+
+        UpdateMusicStream(*musicaAtual); 
+
+    }
+        
         // ETAPA 1: LÓGICA
         switch (telaAtual) {
             case MENU:
