@@ -314,8 +314,6 @@ int main(void) {
 
         UpdateMusicStream(*musicaAtual); 
 
-    }
-        
         // ETAPA 1: LÓGICA
         switch (telaAtual) {
             case MENU:
