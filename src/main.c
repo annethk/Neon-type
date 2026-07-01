@@ -454,7 +454,14 @@ int main(void) {
                         // --- NOVA LÓGICA DE TEMPO ---
                         // Verifica se o combo é par (maior que 0) e adiciona 1 segundo
                         if (jogador.combo > 0 && jogador.combo % 2 == 0) {
-                            fase_timer_adicionar_tempo(&timerFase, 1); // <--- AQUI!
+                            fase_timer_adicionar_tempo(&timerFase, 1);
+                            adicionar_bonus_visual("+1s", CYAN); 
+                        }
+
+                        // No combo múltiplo de 5: Rosa
+                        if (jogador.combo > 0 && jogador.combo % 5 == 0) {
+                            fase_timer_adicionar_tempo(&timerFase, 1); // +1 adicional (total +2)
+                            adicionar_bonus_visual("+2s", MAGENTA); 
                         }
 
                         if (jogador.combo >= 20) {
