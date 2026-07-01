@@ -1032,11 +1032,11 @@ int main(void) {
                     (Rectangle){0, 0, 320, 240},
                     (Vector2){0, 0}, 0.0f, WHITE);
                     Color corGameOver = RED;
-                    DrawText("GAMEOVER", 76, 36, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 78, 38, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 76,36, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 78,38, 40, Fade(corGameOver, 0.25f));
-                    DrawText("GAMEOVER", 76, 36, 40, corGameOver);
+                    DrawText("GAMEOVER", 46, 36, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 48, 38, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 46,36, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 48,38, 40, Fade(corGameOver, 0.25f));
+                    DrawText("GAMEOVER", 46, 36, 40, corGameOver);
                     DrawTexturePro(notebookNormal, (Rectangle){0, 0, (float)notebookNormal.width, (float)notebookNormal.height},
                     (Rectangle){80, 40, 190, 190},
                     (Vector2){0, 0}, 0.0f, WHITE);
