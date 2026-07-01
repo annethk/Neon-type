@@ -2,6 +2,7 @@
 #include <stdlib.h> // Necessário para a função exit(0)
 #include <stdio.h>
 #include <time.h>   // srand(time(NULL)) para sorteio de palavras
+#include <string.h>
 
 // ===== Módulo de lógica/dados do Programador A =====
 // Substitui as struc#include "raylib.h"
@@ -39,8 +40,8 @@ void adicionar_bonus_visual(const char* texto, Color cor, int tamanho) {
         if (!listaBonus[i].ativo) {
             listaBonus[i].ativo = 1;
             listaBonus[i].alpha = 1.0f;
-            listaBonus[i].x = 230; // Posição fixa à esquerda do timer
-            listaBonus[i].y = 15;  // Nasce logo abaixo do timer (que está no Y=8)
+            listaBonus[i].x = 230; 
+            listaBonus[i].y = 40;  // Começa mais abaixo do cabeçalho
             listaBonus[i].cor = cor;
             listaBonus[i].tamanho = tamanho;
             strcpy(listaBonus[i].texto, texto);
@@ -483,13 +484,13 @@ int main(void) {
                         // No combo par: +1s (Amarelo, tamanho padrão do timer)
                         if (jogador.combo > 0 && jogador.combo % 2 == 0) {
                             fase_timer_adicionar_tempo(&timerFase, 1);
-                            adicionar_bonus_visual("+1s", YELLOW, 20); 
+                            adicionar_bonus_visual("+1s", (Color){ 255, 255, 0, 255 }, 20);
                             }
 
                         // No combo múltiplo de 5: +2s (Magenta, maior)
                         if (jogador.combo > 0 && jogador.combo % 5 == 0) {
                             fase_timer_adicionar_tempo(&timerFase, 1); 
-                            adicionar_bonus_visual("+2s", MAGENTA, 25); 
+                            adicionar_bonus_visual("+2s", (Color){ 255, 0, 255, 255 }, 25);
                         }
 
                         if (jogador.combo >= 20) {
@@ -945,20 +946,19 @@ int main(void) {
                     Color corTempo = (timerFase.tempo_restante <= 5.0f) ? RED : GREEN;
                     DrawText(TextFormat("%02d", (int)timerFase.tempo_restante), 270, 8, 10, corTempo);
 
-                    // --- COLE O CÓDIGO DO BÔNUS AQUI ---
+                    // --- CÓDIGO DO BÔNUS AQUI ---
                     for (int i = 0; i < MAX_BONUS; i++) {
                         if (listaBonus[i].ativo) {
-                            listaBonus[i].alpha -= 0.007f; 
-                            listaBonus[i].y += 0.2f;       
+                            listaBonus[i].alpha -= 0.015f; // Fade um pouco mais rápido para parecer "brilho"
+                            listaBonus[i].y += 0.8f;       // Desce mais rápido para ganhar dinamismo
         
-                    // Ajustei o X para 230 para ficar um pouco à esquerda do tempo (que está no 270)
-                    // Ajustei o Y para 8 (alinhado com o tempo)
-                        DrawText(listaBonus[i].texto, 230, (int)listaBonus[i].y, listaBonus[i].tamanho, Fade(listaBonus[i].cor, listaBonus[i].alpha));
+                        DrawText(listaBonus[i].texto, (int)listaBonus[i].x, (int)listaBonus[i].y, 
+                        listaBonus[i].tamanho, Fade(listaBonus[i].cor, listaBonus[i].alpha));
         
                         if (listaBonus[i].alpha <= 0) listaBonus[i].ativo = 0;
                         }
                     }
-                    
+
                     // -------CÓDIGO DOS CORAÇÕES CONTINUAM AQUI---------
 
                         for (int i = 0; i < 5; i++){
@@ -973,21 +973,6 @@ int main(void) {
                                 );
                              }
                         }
-
-                    // --- COLE O CÓDIGO DO BÔNUS AQUI ---
-                    for (int i = 0; i < MAX_BONUS; i++) {
-                        if (listaBonus[i].ativo) {
-                            listaBonus[i].alpha -= 0.007f; 
-                            listaBonus[i].y -= 0.2f;       
-        
-                    // Ajustei o X para 230 para ficar um pouco à esquerda do tempo (que está no 270)
-                    // Ajustei o Y para 8 (alinhado com o tempo)
-                        DrawText(listaBonus[i].texto, 230, (int)listaBonus[i].y, listaBonus[i].tamanho, Fade(listaBonus[i].cor, listaBonus[i].alpha));
-        
-                        if (listaBonus[i].alpha <= 0) listaBonus[i].ativo = 0;
-                        }
-                    }
-                    // ------------------------------------
 
                     //variaveis para descobrir o tamanho da palavra e quantas letras o jogador digitou
                     int tamP = TextLength(palavraAtual);
