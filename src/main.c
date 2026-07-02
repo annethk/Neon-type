@@ -630,7 +630,8 @@ int main(void) {
                             SairPausa = true;
                             PlaySound(selectSom);
 
-                            jogador_resetar_total(&jogador);
+                            jogador_restaurar_checkpoint(&jogador);
+                            jogador_resetar_fase(&jogador);
 
                             faseIniciando = true;
                             telaAtual = GAMEPLAY; 
@@ -641,7 +642,7 @@ int main(void) {
                             jogador.combo = 0;
                             jogador.palavras_fase = 0; 
                             jogador.vidas = 5; 
-                            jogador_reiniciar_fase(&jogador);
+                            jogador_restaurar_checkpoint(&jogador);
                             tamanhoinput = 0;
                             input[0] = '\0';
                             timerFase = fase_timer_iniciar(faseConfig);

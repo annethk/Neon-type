@@ -71,7 +71,7 @@ void jogador_salvar_checkpoint(Jogador *j) {
 }
 
 // Volta o score para o valor que ele tinha no início da fase
-void jogador_reiniciar_fase(Jogador *j) {
+void jogador_restaurar_checkpoint(Jogador *j) {
     j->score = j->score_checkpoint;
 }
 

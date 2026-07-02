@@ -26,7 +26,7 @@ void jogador_resetar_total(Jogador *j);
 
 void jogador_salvar_checkpoint(Jogador *j);
 
-void jogador_reiniciar_fase(Jogador *j);
+void jogador_restaurar_checkpoint(Jogador *j);
 
 int jogador_perder_vida(Jogador *j);
 
