@@ -20,7 +20,7 @@ Jogador jogador_criar(const char *nome) {
 
 void jogador_resetar_fase(Jogador *j) {
     j->palavras_fase = 0;
-    j->backup_usado = 0;
+    
 }
 
 int jogador_perder_vida(Jogador *j) {

@@ -35,6 +35,6 @@ void fase_timer_adicionar_tempo(TimerFase *timer, int segundos);
 
 int fase_timer_esgotado(const TimerFase *timer);
 
-ResultadoFase fase_avaliar_resultado(const Jogador *jogador, const TimerFase *timer, const Fase *fase);
+ResultadoFase fase_avaliar_resultado(Jogador *jogador, const TimerFase *timer, const Fase *fase);
 
 #endif // FASE_H

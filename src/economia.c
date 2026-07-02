@@ -30,27 +30,32 @@ ResultadoCompra economia_comprar_item(Jogador *jogador, TimerFase *timer, ItemLo
             return COMPRA_SUCESSO;
 
         case ITEM_BACKUP_DADOS:
-
-            if (jogador->backup_usado) {
-                return COMPRA_FALHA_BACKUP_JA_USADO;
+        // Se já estiver como 1, significa que ele já comprou o backup
+            if (jogador->backup_usado == 1) { 
+             return COMPRA_FALHA_BACKUP_JA_USADO; 
             }
+
             if (jogador->moedas < PRECOS_LOJA[ITEM_BACKUP_DADOS]) {
                 return COMPRA_FALHA_SEM_MOEDAS;
             }
+
             jogador->moedas -= PRECOS_LOJA[ITEM_BACKUP_DADOS];
-            jogador->backup_usado = 1;
+            jogador->backup_usado = 1; // Agora ele tem o "seguro" ativo!
 
             return COMPRA_SUCESSO;
 
         case ITEM_VIDA_EXTRA:
+            
             if (jogador->vidas >= VIDAS_MAX) {
-                return COMPRA_FALHA_VIDAS_JA_NO_MAXIMO;
+            return COMPRA_FALHA_VIDAS_JA_NO_MAXIMO;
             }
+
             if (jogador->moedas < PRECOS_LOJA[ITEM_VIDA_EXTRA]) {
-                return COMPRA_FALHA_SEM_MOEDAS;
+            return COMPRA_FALHA_SEM_MOEDAS;
             }
-            jogador->moedas -= PRECOS_LOJA[ITEM_VIDA_EXTRA];
+         jogador->moedas -= PRECOS_LOJA[ITEM_VIDA_EXTRA];
             jogador_ganhar_vida(jogador);
+
             return COMPRA_SUCESSO;
 
         default:

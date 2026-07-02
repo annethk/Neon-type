@@ -45,15 +45,24 @@ int fase_timer_esgotado(const TimerFase *timer) {
     return timer->tempo_restante <= 0.0f;
 }
 
-ResultadoFase fase_avaliar_resultado(const Jogador *jogador, const TimerFase *timer, const Fase *fase) {
+ResultadoFase fase_avaliar_resultado(Jogador *jogador, const TimerFase *timer, const Fase *fase) {
     if (jogador->palavras_fase >= fase->meta_palavras) {
         return FASE_VITORIA;
     }
+
     if (jogador->vidas <= 0) {
-        return FASE_GAME_OVER;
+        // Se ele comprou (está 1), salvamos ele!
+        if (jogador->backup_usado == 1) { 
+            jogador->vidas = 5;         // Restaura vida
+            jogador->backup_usado = 0;  // Consumiu o item, volta a ser 0
+            return FASE_EM_ANDAMENTO;   // Continua o jogo
+        }
+        return FASE_GAME_OVER;          // Se estava 0, morreu mesmo.
     }
+
     if (fase_timer_esgotado(timer)) {
         return FASE_GAME_OVER;
     }
+
     return FASE_EM_ANDAMENTO;
 }
