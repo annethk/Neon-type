@@ -5,7 +5,7 @@ const int PRECOS_LOJA[5] = {
     0,    // [0] nao usado
     50,   // [ITEM_REFRIGERACAO]
     90,   // [ITEM_OVERCLOCK]
-    200,  // [ITEM_BACKUP_DADOS]
+    150,  // [ITEM_BACKUP_DADOS]
     80    // [ITEM_VIDA_EXTRA]
 };
 
