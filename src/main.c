@@ -460,8 +460,8 @@ int main(void) {
                             timerTexto = 0.0f;
                         } else {
 
-                            // AQUI: Reseta o estado do jogador para garantir que ele comece do Level 1
-                            jogador_resetar_total(&jogador);
+                            // AQUI: Apenas iniciamos a fase, NÃO resetamos o jogador!
+                            jogador_resetar_fase(&jogador); // Isso zera palavras_fase, combo, backup_usado...
 
                             faseIniciando = true;
                             telaAtual = GAMEPLAY; 
@@ -769,6 +769,9 @@ int main(void) {
                                 // onde estavam).
                                 scoreAtual = jogador.score;
                                 jogador_resetar_fase(&jogador);
+                                
+                                jogador.score = scoreAtual;       // <--- Mantém o score acumulado entre fases
+                                jogador_salvar_checkpoint(&jogador); // <--- ATUALIZA O CHECKPOINT COM O SCORE ATUAL
 
                                 // Limpa os bônus visuais para não transbordar entre fases
                                 for (int i = 0; i < MAX_BONUS; i++) {
