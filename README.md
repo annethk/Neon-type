@@ -41,24 +41,6 @@ Para cada fase (servidor), você deve digitar com precisão a **meta de palavras
 - **Navegação nos Menus:** Utilize as teclas numéricas (`1`, `2`, `3`) ou clique nos botões interativos para selecionar opções.
 - **Login / Terminal:** Digite seu codinome no terminal de entrada e pressione `Enter` para inicializar a sessão de invasão.
 
-### 🔄 Fluxo de Jogo
-
-```mermaid
-flowchart TD
-    A["Cutscene de Terminal (Texto Letra por Letra)"] --> B["Identificação: LOGIN de Hacker"]
-    B --> C["Menu Principal"]
-    C -->|1: Iniciar Invasão| D["Gameplay (Servidor Ativo)"]
-    C -->|2: Ranking| E["Tela de Ranking (Top 3)"]
-    C -->|3: Sair| F["Encerrar Execução"]
-    
-    D -->|Tempo Esgotado ou Vidas = 0| G["Game Over (Salva Score no Ranking)"]
-    D -->|Meta Atingida no Tempo| H["Level Clear!"]
-    
-    H --> I["Lojinha do Hacker (Upgrades)"]
-    I -->|Próxima Fase| D
-    I -->|Concluiu Level 8 (SQL)| J["🏆 Vitória Final (Final Hacker Top 3)"]
-```
-
 ---
 
 ## ⚙️ Mecânicas do Jogo
